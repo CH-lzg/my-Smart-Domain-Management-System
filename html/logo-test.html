@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>logo test</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        background: #1b2631;
+      }
+      img {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <img
+      id="l"
+      src="../assets/智域管家logo/智域家庭管家_透明PNG_300dpi.png"
+      style="max-width: 300px"
+    />
+    <script>
+      const img = document.getElementById('l')
+      img.onload = () =>
+        console.log('natural:', img.naturalWidth, 'x', img.naturalHeight)
+    </script>
+  </body>
+</html>

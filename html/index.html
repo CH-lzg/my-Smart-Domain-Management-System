@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1220" />
+    <title>智域管家 · 登录</title>
+    <script>
+      ;(function () {
+        const getAccounts = () => {
+          try {
+            const accounts = JSON.parse(
+              localStorage.getItem('zhiyuAccounts') || '[]',
+            )
+            return Array.isArray(accounts) ? accounts : []
+          } catch (error) {
+            return []
+          }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+          const form = document.getElementById('loginForm')
+          const forgotLink = document.getElementById('forgotLink')
+          if (forgotLink)
+            forgotLink.addEventListener('click', (event) => {
+              event.preventDefault()
+              location.href = 'forgot.html'
+            })
+          form.addEventListener('submit', (event) => {
+            const account = document.getElementById('account').value.trim()
+            const password = document.getElementById('password').value.trim()
+            const agreement = document.getElementById('agreement')
+            const message = document.getElementById('formMessage')
+            if (!account || !password) return
+            if (!agreement.checked) return
+            const matchedAccount = getAccounts().find(
+              (item) => item.account === account && item.password === password,
+            )
+            if (!matchedAccount) {
+              event.preventDefault()
+              message.textContent = '账号或密码错误，请检查后重试。'
+              message.className = 'form-message error'
+              return
+            }
+            event.preventDefault()
+            localStorage.setItem(
+              'zhiyuCurrentUser',
+              JSON.stringify({
+                account: matchedAccount.account,
+                loginAt: new Date().toISOString(),
+              }),
+            )
+            location.href = 'home.html'
+          })
+        })
+      })()
+    </script>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="login-page">
+    <main class="login-shell">
+      <section class="brand-panel" aria-label="产品介绍">
+        <div class="brand-topline">
+          <span class="status-dot"></span> SMART HOME OS
+          <span class="topline-separator">/</span> 智能家庭操作系统
+        </div>
+        <div class="brand-content">
+          <div class="brand-lockup">
+            <div class="brand-mark">
+              <img
+                src="../assets/智域管家logo/智域家庭管家_透明PNG_300dpi.png"
+                alt="智域管家 Logo"
+              />
+            </div>
+            <div>
+              <strong>智域管家</strong><span>INTELLIGENT HOME MANAGER</span>
+            </div>
+          </div>
+          <h1>让家，<br /><em>会思考。</em></h1>
+          <p class="brand-description">
+            持续感知家庭环境，自动做出更舒适、更节能的生活决策。
+          </p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <span class="feature-icon">✦</span>
+              <div>
+                <strong>全屋环境感知</strong
+                ><small>温湿度、光照与人员状态实时洞察</small>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">◌</span>
+              <div>
+                <strong>AI 自动决策</strong
+                ><small>理解你的习惯，主动调节空间状态</small>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">⌁</span>
+              <div>
+                <strong>设备统一管控</strong
+                ><small>一个中枢，管理全屋智能设备</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="brand-footer">
+          <span>智域管家 v1.0</span><span>系统运行稳定</span>
+        </div>
+      </section>
+
+      <section class="form-panel" aria-label="用户登录">
+        <div class="form-card">
+          <div class="form-heading">
+            <span class="eyebrow">WELCOME BACK</span>
+            <h2>欢迎回来</h2>
+            <p>登录你的智域管家账户，继续管理智能生活。</p>
+          </div>
+          <form id="loginForm" novalidate>
+            <label class="field-label" for="account">账号</label>
+            <div class="field-wrap">
+              <span class="field-icon">◎</span
+              ><input
+                id="account"
+                name="account"
+                type="text"
+                autocomplete="username"
+                placeholder="请输入账号"
+              />
+            </div>
+            <label class="field-label" for="password">密码</label>
+            <div class="field-wrap">
+              <span class="field-icon">◇</span
+              ><input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="请输入密码"
+              /><button
+                class="toggle-password"
+                id="togglePassword"
+                type="button"
+                aria-label="显示密码"
+              >
+                显示
+              </button>
+            </div>
+            <div class="form-options">
+              <label class="check-label"
+                ><input id="remember" type="checkbox" />
+                <span class="custom-check"></span>记住登录状态</label
+              ><a href="forgot.html" id="forgotLink">忘记账号/密码？</a>
+            </div>
+            <label class="agreement"
+              ><input id="agreement" type="checkbox" checked /><span
+                class="custom-check"
+              ></span
+              ><span
+                >我已阅读并同意 <a href="#">服务协议</a>、<a href="#"
+                  >隐私政策</a
+                >与<a href="#">智域账号服务须知</a></span
+              ></label
+            >
+            <button class="login-button" type="submit">
+              登录 <span>→</span>
+            </button>
+            <div
+              class="form-message"
+              id="formMessage"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </form>
+          <div class="form-divider"><span>还没有智域账号？</span></div>
+          <a class="register-link" href="register.html" id="registerLink"
+            >立即注册 <span>↗</span></a
+          >
+        </div>
+        <div class="form-bottom">
+          <span>© 2026 智域管家</span><span>隐私与安全</span>
+        </div>
+      </section>
+    </main>
+    <script>
+      const password = document.getElementById('password')
+      const togglePassword = document.getElementById('togglePassword')
+      const form = document.getElementById('loginForm')
+      const message = document.getElementById('formMessage')
+      const agreement = document.getElementById('agreement')
+      togglePassword.addEventListener('click', () => {
+        const visible = password.type === 'text'
+        password.type = visible ? 'password' : 'text'
+        togglePassword.textContent = visible ? '显示' : '隐藏'
+        togglePassword.setAttribute(
+          'aria-label',
+          visible ? '显示密码' : '隐藏密码',
+        )
+      })
+      form.addEventListener('submit', (event) => {
+        event.preventDefault()
+        const account = document.getElementById('account').value.trim()
+        const pwd = password.value.trim()
+        if (!account || !pwd) {
+          message.textContent = '请输入账号和密码后再登录。'
+          message.className = 'form-message error'
+          return
+        }
+        if (!agreement.checked) {
+          message.textContent = '请先阅读并同意相关协议。'
+          message.className = 'form-message error'
+          return
+        }
+        message.textContent = '登录信息已提交，正在进入智域驾驶仓…'
+        message.className = 'form-message success'
+      })
+      document
+        .getElementById('forgotLink')
+        .addEventListener('click', (event) => {
+          event.preventDefault()
+          message.textContent = '找回密码功能即将开放。'
+          message.className = 'form-message info'
+        })
+    </script>
+  </body>
+</html>

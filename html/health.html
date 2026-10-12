@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>系统状态 · 智域管家</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/cockpit.css" />
+    <link rel="stylesheet" href="../css/modules.css" />
+    <script src="../js/hardware-bridge.js"></script>
+    <style>
+      body.cockpit-page {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        touch-action: none;
+      }
+      .health-page .page-title {
+        display: none;
+      }
+      .health-page .page-padding {
+        top: 4%;
+        height: 92%;
+      }
+    </style>
+  </head>
+  <body class="cockpit-page health-page">
+    <div class="cockpit-stage" id="cockpitStage">
+      <div class="cockpit-shell">
+        <aside class="cockpit-sidebar">
+          <div class="cockpit-brand">
+            <img
+              src="../assets/智域管家logo/智域家庭管家_透明PNG_300dpi.png"
+              alt="智域管家 Logo"
+            />
+          </div>
+          <nav class="cockpit-nav">
+            <a href="home.html"
+              ><span class="dot">■</span
+              ><span class="label">智域驾驶仓</span></a
+            >
+            <a href="device-history.html"
+              ><span class="dot">●</span><span class="label">数据中心</span></a
+            >
+            <a href="decisions.html"
+              ><span class="dot">◆</span><span class="label">智域日志</span></a
+            >
+            <a class="active" href="health.html" aria-current="page"
+              ><span class="dot">○</span><span class="label">系统状态</span></a
+            >
+          </nav>
+          <div class="cockpit-footer">☀ 白昼 &nbsp;|&nbsp; ☽ 黑夜</div>
+        </aside>
+
+        <section class="cockpit-content">
+          <div class="cockpit-topbar">
+            <span class="cockpit-user" id="cockpitUser">用户名</span>
+            <span class="cockpit-status">运行中</span>
+            <span class="cockpit-clock" id="cockpitClock">14:30</span>
+          </div>
+
+          <div class="page-padding">
+            <div class="page-title"><span class="accent"></span>系统健康度</div>
+
+            <!-- 左侧健康度和设备网格 -->
+            <div class="h-left-wrap">
+              <!-- 健康度概览 -->
+              <div class="h-health-hero" data-health-card>
+                <div class="h-health-left">
+                  <div class="h-health-title">系统健康度</div>
+                  <div class="h-health-score-wrap">
+                    <div class="h-health-ring">
+                      <div class="h-health-100" id="healthScore">100%</div>
+                    </div>
+                  </div>
+                  <div class="h-health-sub" id="healthSummary">
+                    所有节点运行正常
+                  </div>
+                </div>
+                <div class="h-health-status" id="healthStatus">✓ 正常</div>
+              </div>
+
+              <!-- 设备状态网格 -->
+              <div class="h-dev-grid" id="deviceGrid">
+                <div class="h-dev-cell" data-device="gateway">
+                  <span class="h-dev-label">设备型号</span
+                  ><span class="h-dev-badge">✓ 正常</span>
+                </div>
+                <div class="h-dev-cell" data-device="temperature">
+                  <span class="h-dev-label">设备型号</span
+                  ><span class="h-dev-badge">✓ 正常</span>
+                </div>
+                <div class="h-dev-cell" data-device="light">
+                  <span class="h-dev-label">设备型号</span
+                  ><span class="h-dev-badge">✓ 正常</span>
+                </div>
+                <div class="h-dev-cell" data-device="presence">
+                  <span class="h-dev-label">设备型号</span
+                  ><span class="h-dev-badge">✓ 正常</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右侧状态表 -->
+            <div class="h-right-wrap">
+              <!-- 主机状态表 -->
+              <div class="h-table">
+                <div class="h-table-title">主机状态</div>
+                <div class="h-table-head">
+                  <span style="width: 25%">设备</span>
+                  <span style="width: 25%">CPU</span>
+                  <span style="width: 25%">内盘</span>
+                  <span style="width: 25%">运行时长</span>
+                </div>
+                <div class="h-table-row" id="hostStatusRow">
+                  <span
+                    style="width: 25%; font-weight: bold"
+                    data-health="hostName"
+                    >树莓派</span
+                  >
+                  <span style="width: 25%" data-health="cpu">40%</span>
+                  <span style="width: 25%" data-health="memory">30%</span>
+                  <span style="width: 25%" data-health="uptime"
+                    >12小时30分钟</span
+                  >
+                </div>
+              </div>
+
+              <!-- 传感器状态表 -->
+              <div class="h-table">
+                <div class="h-table-title">传感器状态</div>
+                <div class="h-table-head" style="display: flex">
+                  <span style="width: 33.33%">温湿度</span>
+                  <span style="width: 33.33%">光照</span>
+                  <span style="width: 33.33%">人体检测</span>
+                </div>
+                <div
+                  class="h-table-row"
+                  id="sensorStatusRow"
+                  style="display: flex; color: #117864"
+                >
+                  <span
+                    style="width: 33.33%"
+                    data-sensor-status="temperature"
+                    data-hardware="sensor-status"
+                    >正常</span
+                  >
+                  <span
+                    style="width: 33.33%"
+                    data-sensor-status="light"
+                    data-hardware="sensor-status"
+                    >正常</span
+                  >
+                  <span
+                    style="width: 33.33%"
+                    data-sensor-status="presence"
+                    data-hardware="sensor-status"
+                    >正常</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- 运行参数和告警 -->
+            <div class="h-bottom-wrap">
+              <div class="h-param-title">运行参数</div>
+              <div class="h-param-cells">
+                <div class="h-param-cell">
+                  <div class="h-param-label">采集周期</div>
+                  <div class="h-param-value" data-param="interval">10秒</div>
+                </div>
+                <div class="h-param-cell">
+                  <div class="h-param-label">自动模式</div>
+                  <div class="h-param-value" data-param="autoMode">已启用</div>
+                </div>
+                <div class="h-param-cell">
+                  <div class="h-param-label">网络状态</div>
+                  <div class="h-param-value" data-param="network">局域网</div>
+                </div>
+                <div class="h-param-cell">
+                  <div class="h-param-label">日志保存</div>
+                  <div class="h-param-value" data-param="logStorage">本地</div>
+                </div>
+              </div>
+
+              <div class="h-alert-card">
+                <div class="h-alert-title">告警记录</div>
+                <div class="h-alert-body" id="alertBody">✓ 暂无告警</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      ;(function () {
+        const stage = document.getElementById('cockpitStage')
+        function fit() {
+          const vw = window.innerWidth,
+            vh = window.innerHeight
+          const tr = 7.5 / 13.333
+          const vr = vh / vw
+          let fw, fh
+          if (vr > tr) {
+            fh = vh
+            fw = vh / tr
+          } else {
+            fw = vw
+            fh = vw * tr
+          }
+          const bf = vw / 100
+          stage.style.left = '50%'
+          stage.style.top = '50%'
+          stage.style.width = fw + 'px'
+          stage.style.height = fh + 'px'
+          stage.style.transform = 'translate(-50%, -50%)'
+          stage.style.fontSize = bf + 'px'
+          const sels = {
+            '.page-title': 1.6,
+            '.h-health-title': 1.1,
+            '.h-health-sub': 0.95,
+            '.h-health-status': 1.1,
+            '.h-dev-label': 0.95,
+            '.h-dev-badge': 0.95,
+            '.h-table-title': 1.1,
+            '.h-table-head': 1.0,
+            '.h-table-row': 1.1,
+            '.h-param-title': 1.1,
+            '.h-param-label': 0.95,
+            '.h-param-value': 1.2,
+            '.h-alert-title': 1.1,
+            '.h-alert-body': 1.4,
+          }
+          Object.entries(sels).forEach(([sel, mult]) => {
+            stage.querySelectorAll(sel).forEach((el) => {
+              el.style.fontSize = bf * mult + 'px'
+            })
+          })
+          // 健康度数字
+          stage.querySelectorAll('.h-health-100').forEach((el) => {
+            el.style.fontSize = bf * 3.2 + 'px'
+          })
+        }
+        fit()
+        window.addEventListener('resize', fit)
+      })()
+      ;(function () {
+        const defaultState = {
+          health: 100,
+          host: { name: '树莓派', cpu: 40, memory: 30, uptime: '12小时30分钟' },
+          devices: {
+            gateway: { name: '设备型号', status: '正常' },
+            temperature: { name: '设备型号', status: '正常' },
+            light: { name: '设备型号', status: '正常' },
+            presence: { name: '设备型号', status: '正常' },
+          },
+          sensors: { temperature: '正常', light: '正常', presence: '正常' },
+          params: {
+            interval: '10秒',
+            autoMode: '已启用',
+            network: '局域网',
+            logStorage: '本地',
+          },
+          alert: '',
+        }
+        const clone = (value) => JSON.parse(JSON.stringify(value))
+        const text = (value) =>
+          value === undefined || value === null ? '--' : String(value)
+        function setHealthState(nextState) {
+          const state = Object.assign(clone(defaultState), nextState || {})
+          state.host = Object.assign(
+            clone(defaultState.host),
+            nextState && nextState.host,
+          )
+          state.devices = Object.assign(
+            clone(defaultState.devices),
+            nextState && nextState.devices,
+          )
+          state.sensors = Object.assign(
+            clone(defaultState.sensors),
+            nextState && nextState.sensors,
+          )
+          state.params = Object.assign(
+            clone(defaultState.params),
+            nextState && nextState.params,
+          )
+          const score = Math.max(0, Math.min(100, Number(state.health) || 0))
+          const hero = document.querySelector('[data-health-card]')
+          const scoreEl = document.getElementById('healthScore')
+          const summaryEl = document.getElementById('healthSummary')
+          const statusEl = document.getElementById('healthStatus')
+          hero.classList.remove('is-warning', 'is-error')
+          hero.style.setProperty('--health-progress', score + '%')
+          scoreEl.textContent = score + '%'
+          const healthText =
+            score >= 95
+              ? '所有节点运行正常'
+              : score >= 70
+                ? '部分节点需要关注'
+                : '存在异常节点'
+          summaryEl.textContent = healthText
+          statusEl.textContent =
+            score >= 95 ? '✓ 正常' : score >= 70 ? '! 注意' : '× 异常'
+          if (score < 95)
+            hero.classList.add(score >= 70 ? 'is-warning' : 'is-error')
+
+          document.querySelector('[data-health="hostName"]').textContent = text(
+            state.host.name,
+          )
+          document.querySelector('[data-health="cpu"]').textContent =
+            text(state.host.cpu) + '%'
+          document.querySelector('[data-health="memory"]').textContent =
+            text(state.host.memory) + '%'
+          document.querySelector('[data-health="uptime"]').textContent = text(
+            state.host.uptime,
+          )
+          document.querySelectorAll('[data-param]').forEach((el) => {
+            el.textContent = text(state.params[el.dataset.param])
+          })
+          document.querySelectorAll('[data-sensor]').forEach((el) => {
+            const value = state.sensors[el.dataset.sensor] || '未知'
+            el.textContent = (value === '正常' ? '✓ ' : '! ') + value
+            el.style.color = value === '正常' ? '#117864' : '#c87514'
+          })
+          document.querySelectorAll('[data-device]').forEach((card) => {
+            const device = state.devices[card.dataset.device] || {}
+            const value = device.status || '未知'
+            card.querySelector('.h-dev-label').textContent =
+              device.name || card.dataset.device
+            const badge = card.querySelector('.h-dev-badge')
+            badge.textContent = (value === '正常' ? '✓ ' : '! ') + value
+            badge.classList.remove('is-warning', 'is-error')
+            card.classList.remove('is-warning', 'is-error')
+            if (value !== '正常') {
+              const level =
+                value === '异常' || value === '离线' ? 'error' : 'warning'
+              badge.classList.add('is-' + level)
+              card.classList.add('is-' + level)
+            }
+          })
+          const alertEl = document.getElementById('alertBody')
+          alertEl.textContent = state.alert ? '! ' + state.alert : '✓ 暂无告警'
+          alertEl.style.color = state.alert ? '#c87514' : '#117864'
+          window.dispatchEvent(
+            new CustomEvent('zhiyu:health-updated', { detail: state }),
+          )
+        }
+        async function fetchFromApi(url) {
+          const response = await fetch(url, {
+            headers: { Accept: 'application/json' },
+          })
+          if (!response.ok)
+            throw new Error('健康状态接口请求失败: ' + response.status)
+          const state = await response.json()
+          setHealthState(state)
+          return state
+        }
+        function connectWs(url) {
+          const socket = new WebSocket(url)
+          socket.addEventListener('message', (event) => {
+            try {
+              setHealthState(JSON.parse(event.data))
+            } catch (error) {
+              console.warn('健康状态消息格式无效', error)
+            }
+          })
+          return socket
+        }
+        window.ZhiyuHealth = { update: setHealthState, fetchFromApi, connectWs }
+        setHealthState(defaultState)
+      })()
+      ;(function () {
+        let name = '用户'
+        try {
+          const u = JSON.parse(
+            localStorage.getItem('zhiyuCurrentUser') || 'null',
+          )
+          if (u && u.account) name = u.account
+        } catch (e) {}
+        const el = document.getElementById('cockpitUser')
+        if (el) el.textContent = name
+      })()
+      setInterval(() => {
+        const c = document.getElementById('cockpitClock')
+        if (c)
+          c.textContent = new Date().toLocaleTimeString('zh-CN', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+      }, 1000)
+      document.addEventListener(
+        'wheel',
+        (e) => {
+          if (e.ctrlKey) e.preventDefault()
+        },
+        { passive: false },
+      )
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && /^[0+-=]$/.test(e.key)) e.preventDefault()
+      })
+      document.addEventListener(
+        'touchmove',
+        (e) => {
+          if (e.touches.length === 2) e.preventDefault()
+        },
+        { passive: false },
+      )
+    </script>
+  </body>
+</html>

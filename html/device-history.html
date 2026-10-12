@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>数据中心 · 智域管家</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/cockpit.css" />
+    <link rel="stylesheet" href="../css/modules.css" />
+    <script src="../js/hardware-bridge.js"></script>
+    <style>
+      body.cockpit-page {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        touch-action: none;
+      }
+    </style>
+  </head>
+  <body class="cockpit-page">
+    <div class="cockpit-stage" id="cockpitStage">
+      <div class="cockpit-shell">
+        <aside class="cockpit-sidebar">
+          <div class="cockpit-brand">
+            <img
+              src="../assets/智域管家logo/智域家庭管家_透明PNG_300dpi.png"
+              alt="智域管家 Logo"
+            />
+          </div>
+          <nav class="cockpit-nav">
+            <a href="home.html"
+              ><span class="dot">■</span
+              ><span class="label">智域驾驶仓</span></a
+            >
+            <a class="active" href="device-history.html" aria-current="page"
+              ><span class="dot">●</span><span class="label">数据中心</span></a
+            >
+            <a href="decisions.html"
+              ><span class="dot">◆</span><span class="label">智域日志</span></a
+            >
+            <a href="health.html"
+              ><span class="dot">○</span><span class="label">系统状态</span></a
+            >
+          </nav>
+          <div class="cockpit-footer">☀ 白昼 &nbsp;|&nbsp; ☽ 黑夜</div>
+        </aside>
+
+        <section class="cockpit-content">
+          <div class="cockpit-topbar">
+            <span class="cockpit-user" id="cockpitUser">用户名</span>
+            <span class="cockpit-status" data-hardware="connection"
+              >运行中</span
+            >
+            <span class="cockpit-clock" id="cockpitClock">14:30</span>
+          </div>
+
+          <div class="page-padding">
+            <div
+              class="history-trend-card"
+              style="left: 2%; top: 1%; width: 47%; height: 35%"
+            >
+              <div class="title">温湿度趋势</div>
+              <div class="body" id="temperatureHumidityChart"></div>
+            </div>
+
+            <div
+              class="history-trend-card"
+              style="left: 51%; top: 1%; width: 47%; height: 35%"
+            >
+              <div class="title">光照变化趋势</div>
+              <div class="body" id="lightChart"></div>
+            </div>
+
+            <div
+              class="page-subtitle"
+              style="left: 2%; top: 39%; width: 96%; height: 5%"
+            >
+              设备开关历史
+            </div>
+            <div
+              class="history-table"
+              style="left: 2%; top: 46%; width: 96%; height: 53%"
+            >
+              <div class="history-table-header">
+                <span class="col-h-time">时间</span>
+                <span class="col-h-device">设备</span>
+                <span class="col-h-dec">决策类型</span>
+                <span class="col-h-op">操作</span>
+                <span class="col-h-reason">触发原因</span>
+              </div>
+              <div class="history-table-body" id="deviceHistoryBody"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      ;(function () {
+        const stage = document.getElementById('cockpitStage')
+        function fit() {
+          const vw = window.innerWidth,
+            vh = window.innerHeight
+          // 保持所有模块使用统一画布比例。
+          const tr = 7.5 / 13.333
+          const vr = vh / vw
+          let fw, fh
+          if (vr > tr) {
+            fh = vh
+            fw = vh / tr
+          } else {
+            fw = vw
+            fh = vw * tr
+          }
+          const bf = vw / 100
+          stage.style.left = '50%'
+          stage.style.top = '50%'
+          stage.style.width = fw + 'px'
+          stage.style.height = fh + 'px'
+          stage.style.transform = 'translate(-50%, -50%)'
+          stage.style.fontSize = bf + 'px'
+          const sels = {
+            '.history-trend-card .title': 1.1,
+            '.page-subtitle': 1.4,
+            '.history-table-header': 1.1,
+            '.history-table-row': 0.95,
+            '.badge': 0.85,
+          }
+          Object.entries(sels).forEach(([sel, mult]) => {
+            stage.querySelectorAll(sel).forEach((el) => {
+              el.style.fontSize = bf * mult + 'px'
+            })
+          })
+        }
+        fit()
+        window.addEventListener('resize', fit)
+      })()
+      ;(function () {
+        let name = '用户'
+        try {
+          const u = JSON.parse(
+            localStorage.getItem('zhiyuCurrentUser') || 'null',
+          )
+          if (u && u.account) name = u.account
+        } catch (e) {}
+        const el = document.getElementById('cockpitUser')
+        if (el) el.textContent = name
+      })()
+      setInterval(() => {
+        const c = document.getElementById('cockpitClock')
+        if (c)
+          c.textContent = new Date().toLocaleTimeString('zh-CN', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+      }, 1000)
+      ;(function () {
+        const NS = 'http://www.w3.org/2000/svg'
+        const colors = {
+          temperature: '#2E86C1',
+          humidity: '#48C9B0',
+          light: '#F39C12',
+        }
+        function line(points, color, width) {
+          const el = document.createElementNS(NS, 'polyline')
+          el.setAttribute('points', points)
+          el.setAttribute('fill', 'none')
+          el.setAttribute('stroke', color)
+          el.setAttribute('stroke-width', width || '2')
+          return el
+        }
+        function chart(container, series, min, max, labels) {
+          if (!container) return
+          const svg = document.createElementNS(NS, 'svg')
+          svg.setAttribute('viewBox', '0 0 320 180')
+          svg.setAttribute('preserveAspectRatio', 'none')
+          svg.style.cssText = 'width:100%;height:100%'
+          ;[40, 90, 140].forEach((y) => {
+            const grid = document.createElementNS(NS, 'line')
+            grid.setAttribute('x1', '0')
+            grid.setAttribute('x2', '320')
+            grid.setAttribute('y1', y)
+            grid.setAttribute('y2', y)
+            grid.setAttribute('stroke', '#EAF1F5')
+            svg.appendChild(grid)
+          })
+          series.forEach((item) => {
+            const points = item.values
+              .map((value, index) => {
+                const x = (index * 320) / Math.max(1, item.values.length - 1)
+                const y = 160 - ((value - min) / (max - min)) * 125
+                return (
+                  x.toFixed(1) + ',' + Math.max(12, Math.min(160, y)).toFixed(1)
+                )
+              })
+              .join(' ')
+            svg.appendChild(line(points, item.color))
+          })
+          labels.forEach((label, index) => {
+            const text = document.createElementNS(NS, 'text')
+            text.setAttribute('x', 40 + index * 80)
+            text.setAttribute('y', '178')
+            text.setAttribute('fill', '#7F8C8D')
+            text.setAttribute('font-size', '10')
+            text.setAttribute('text-anchor', 'middle')
+            text.textContent = label
+            svg.appendChild(text)
+          })
+          container.replaceChildren(svg)
+        }
+        function render() {
+          if (!window.ZhiyuHardware) return
+          const history = window.ZhiyuHardware.getHistory()
+          const samples = history.samples.slice(-24)
+          chart(
+            document.getElementById('temperatureHumidityChart'),
+            [
+              {
+                values: samples.map((x) => x.temperature),
+                color: colors.temperature,
+              },
+              {
+                values: samples.map((x) => x.humidity),
+                color: colors.humidity,
+              },
+            ],
+            0,
+            100,
+            ['06', '12', '18', '24'],
+          )
+          chart(
+            document.getElementById('lightChart'),
+            [{ values: samples.map((x) => x.light), color: colors.light }],
+            0,
+            100,
+            ['06', '12', '18', '24'],
+          )
+          const body = document.getElementById('deviceHistoryBody')
+          const events = history.events.slice().reverse().slice(0, 9)
+          body.replaceChildren(
+            ...events.map((event, index) => {
+              const row = document.createElement('div')
+              row.className = 'history-table-row'
+              row.style.top = index * 11.1 + '%'
+              const time = new Date(event.timestamp).toLocaleTimeString(
+                'zh-CN',
+                { hour: '2-digit', minute: '2-digit' },
+              )
+              row.innerHTML =
+                '<span class="col-h-time">' +
+                time +
+                '</span><span class="col-h-device">' +
+                event.device +
+                '</span><span class="col-h-dec"><span class="badge ' +
+                (event.decision === 'AI' ? 'badge-ai' : 'badge-man') +
+                '">' +
+                event.decision +
+                '</span></span><span class="col-h-op"><span class="badge ' +
+                (event.operation === '打开' ? 'badge-on' : 'badge-off') +
+                '">' +
+                event.operation +
+                '</span></span><span class="col-h-reason">' +
+                event.reason +
+                '</span>'
+              return row
+            }),
+          )
+        }
+        render()
+        window.addEventListener('zhiyu:hardware-state', render)
+        window.addEventListener('storage', render)
+      })()
+      document.addEventListener(
+        'wheel',
+        (e) => {
+          if (e.ctrlKey) e.preventDefault()
+        },
+        { passive: false },
+      )
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && /^[0+-=]$/.test(e.key)) e.preventDefault()
+      })
+      document.addEventListener(
+        'touchmove',
+        (e) => {
+          if (e.touches.length === 2) e.preventDefault()
+        },
+        { passive: false },
+      )
+    </script>
+  </body>
+</html>

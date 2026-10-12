@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+    />
+    <title>户型图 · 智域驾驶仓</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/cockpit.css" />
+    <link rel="stylesheet" href="../css/modules.css" />
+    <style>
+      body.cockpit-page {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        touch-action: none;
+      }
+      html,
+      body.cockpit-page {
+        touch-action: none;
+        -ms-touch-action: none;
+      }
+
+      /* 户型图页容器 */
+      .fp-page {
+        position: relative;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      /* 返回按钮 */
+      .fp-back {
+        position: absolute;
+        left: 0;
+        height: 6%;
+        display: flex;
+        align-items: center;
+        padding: 0 1.5%;
+        color: #1a5276;
+        cursor: pointer;
+        text-decoration: none;
+        letter-spacing: 1px;
+        font-weight: bold;
+      }
+      .fp-back::before {
+        content: '←';
+        margin-right: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #1a5276;
+        border: 1px solid #e5e9ec;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      }
+
+      /* 通用卡 */
+      .fp-tile {
+        position: absolute;
+        border: 1px solid #e5e9ec;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+      .fp-tile-title {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 11%;
+        padding: 0 4%;
+        display: flex;
+        align-items: center;
+        color: #1a5276;
+        font-weight: bold;
+        letter-spacing: 1px;
+        border-bottom: 1px solid #eaf1f5;
+        box-sizing: border-box;
+        background: #ffffff;
+      }
+      .fp-tile-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 16%;
+        height: 68%;
+        width: 4px;
+        background: #2e86c1;
+        border-radius: 2px;
+      }
+      .fp-tile-body {
+        position: absolute;
+        left: 0;
+        top: 11%;
+        width: 100%;
+        height: 89%;
+        box-sizing: border-box;
+      }
+
+      /* 房间示意图 */
+      .fp-rooms {
+        position: absolute;
+        left: 3%;
+        top: 5%;
+        width: 94%;
+        height: 90%;
+        box-sizing: border-box;
+      }
+      .fp-room {
+        position: absolute;
+        border: 1.5px solid #48c9b0;
+        background: rgba(72, 201, 176, 0.04);
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      .fp-room .label {
+        position: absolute;
+        left: 8%;
+        top: 6%;
+        font-weight: bold;
+        color: #1a5276;
+        letter-spacing: 1px;
+      }
+      .fp-room .item {
+        position: absolute;
+        border-radius: 2px;
+      }
+
+      /* 灯光控制 */
+      .lamp-list {
+        position: absolute;
+        left: 4%;
+        top: 14%;
+        width: 92%;
+        height: 82%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5%;
+      }
+      .lamp-row {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 3%;
+        padding: 1% 4%;
+        box-sizing: border-box;
+      }
+      .lamp-bulb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #d5dbdb;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .lamp-bulb.on {
+        background: linear-gradient(135deg, #27ae60, #1e8449);
+      }
+      .lamp-bulb.on::after {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 4px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+      }
+      .lamp-name {
+        width: 14%;
+        font-weight: bold;
+        color: #1a5276;
+        letter-spacing: 1px;
+      }
+      .lamp-slider {
+        flex: 1;
+        min-width: 0;
+        height: 18px;
+        appearance: none;
+        -webkit-appearance: none;
+        border-radius: 9px;
+        background: #ecf0f1;
+        cursor: pointer;
+        accent-color: #27ae60;
+      }
+      .lamp-slider::-webkit-slider-runnable-track {
+        height: 6px;
+        border-radius: 3px;
+        background: linear-gradient(
+          90deg,
+          #27ae60 0%,
+          #27ae60 var(--brightness, 0%),
+          #ecf0f1 var(--brightness, 0%),
+          #ecf0f1 100%
+        );
+      }
+      .lamp-slider::-moz-range-track {
+        height: 6px;
+        border-radius: 3px;
+        background: #ecf0f1;
+      }
+      .lamp-slider::-moz-range-progress {
+        height: 6px;
+        border-radius: 3px;
+        background: #27ae60;
+      }
+      .lamp-slider::-webkit-slider-thumb {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        margin-top: -5px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        background: #1e8449;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      }
+      .lamp-slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        background: #1e8449;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      }
+      .lamp-slider:focus-visible {
+        outline: 2px solid #48c9b0;
+        outline-offset: 2px;
+      }
+      .lamp-pct {
+        width: 8%;
+        font-weight: bold;
+        color: #1a5276;
+        text-align: right;
+        letter-spacing: 1px;
+      }
+      .lamp-toggle {
+        width: 28px;
+        height: 16px;
+        border-radius: 8px;
+        background: #27ae60;
+        position: relative;
+        flex-shrink: 0;
+        cursor: pointer;
+        border: 0;
+        padding: 0;
+      }
+      .lamp-toggle::after {
+        content: '';
+        position: absolute;
+        right: 2px;
+        top: 2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+      .lamp-toggle.off {
+        background: #d5dbdb;
+      }
+      .lamp-toggle.off::after {
+        right: auto;
+        left: 2px;
+      }
+
+      /* 设备状态 */
+      .dev-list {
+        position: absolute;
+        left: 4%;
+        top: 16%;
+        width: 92%;
+        height: 78%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 4%;
+      }
+      .dev-row {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 4%;
+        padding: 4% 6%;
+        box-sizing: border-box;
+        border-bottom: 1px solid #ecf0f1;
+      }
+      .dev-row:last-child {
+        border-bottom: 0;
+      }
+      .dev-cell {
+        display: flex;
+        align-items: center;
+        gap: 4%;
+      }
+      .dev-circle {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ecf0f1;
+        flex-shrink: 0;
+      }
+      .dev-name {
+        font-weight: bold;
+        color: #1a5276;
+        letter-spacing: 1px;
+      }
+      .dev-bars {
+        flex: 1;
+        display: flex;
+        gap: 6%;
+        justify-content: center;
+        align-items: center;
+      }
+      .dev-bar {
+        width: 10%;
+        height: 6px;
+        border-radius: 3px;
+        background: #ecf0f1;
+      }
+      .dev-bar.g {
+        background: #27ae60;
+      }
+      .dev-bar.b {
+        background: #2980b9;
+      }
+      .dev-bar.o {
+        background: #f39c12;
+      }
+      .dev-status {
+        width: 16%;
+        text-align: right;
+        letter-spacing: 1px;
+      }
+      .dev-status .live {
+        color: #27ae60;
+        font-weight: bold;
+      }
+      .dev-status .idle {
+        color: #95a5a6;
+        font-weight: bold;
+      }
+      .dev-status .charging {
+        color: #f39c12;
+        font-weight: bold;
+      }
+
+      /* 空调控制 */
+      .ac-body {
+        position: absolute;
+        left: 0;
+        top: 11%;
+        width: 100%;
+        height: 89%;
+        box-sizing: border-box;
+        padding: 4% 4%;
+        display: flex;
+        align-items: center;
+        gap: 4%;
+      }
+      .ac-temp-block {
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .ac-temp-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid #2980b9;
+        color: #2980b9;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .ac-temp-l1 {
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .ac-temp-l2 {
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .ac-temp-big {
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: #2980b9;
+      }
+      .ac-temp-c {
+        font-weight: bold;
+        color: #2980b9;
+      }
+      .ac-pm {
+        flex: 0 0 44px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+      .ac-pm button {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 7px;
+        background: #ffffff;
+        border: 2px solid #bdc3c7;
+        color: #34495e;
+        font-weight: bold;
+        line-height: 1;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition:
+          transform 0.12s ease,
+          background-color 0.12s ease,
+          border-color 0.12s ease;
+      }
+      .ac-pm button:hover {
+        background: #eef7fb !important;
+        border-color: #2e86c1;
+      }
+      .ac-pm button:active,
+      .ac-pm button.pressed {
+        transform: scale(0.88);
+        background: #d9edf7 !important;
+        border-color: #2980b9;
+      }
+      .ac-pm button:focus-visible {
+        outline: 2px solid #2e86c1;
+        outline-offset: 2px;
+      }
+      .ac-btns {
+        flex: 2.4;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 6%;
+        padding: 2% 4%;
+        box-sizing: border-box;
+        align-items: center;
+        justify-items: center;
+      }
+      .ac-btn {
+        min-width: 50px;
+        padding: 6% 8%;
+        border-radius: 6px;
+        background: #ecf0f1;
+        color: #34495e;
+        font-weight: bold;
+        letter-spacing: 1px;
+        cursor: pointer;
+        text-align: center;
+        border: 1px solid #d5dbdb;
+      }
+      .ac-btn.on {
+        background: linear-gradient(135deg, #27ae60, #1e8449);
+        color: #fff;
+        border-color: transparent;
+      }
+
+      /* 页面布局 */
+      body.cockpit-page {
+        background: #eef1f3;
+      }
+      .cockpit-sidebar {
+        width: 13% !important;
+        z-index: 20;
+      }
+      .cockpit-brand {
+        height: 22% !important;
+      }
+      .cockpit-nav {
+        z-index: 21;
+        pointer-events: auto;
+      }
+      .cockpit-content {
+        left: 13% !important;
+        width: 87% !important;
+        background: #eef1f3 !important;
+      }
+      .cockpit-topbar {
+        display: none !important;
+      }
+
+      /* 卡片布局 */
+      .fp-page {
+        position: relative !important;
+        left: auto !important;
+        width: 96% !important;
+        height: 98% !important;
+        margin: 0 2% !important;
+        padding: 1.2% 0 0 !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 55fr) minmax(0, 42fr) !important;
+        grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr) !important;
+        gap: 2% !important;
+        box-sizing: border-box !important;
+      }
+      .fp-back {
+        position: static !important;
+        grid-column: 1 / -1 !important;
+        grid-row: 1 !important;
+        justify-self: start !important;
+        width: max-content !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 34px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        align-self: center !important;
+        white-space: nowrap !important;
+      }
+      .fp-page > #fp-floor,
+      .fp-page > #fp-light,
+      .fp-page > #fp-devices,
+      .fp-page > #fp-ac {
+        position: relative !important;
+        left: auto !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+      }
+      .fp-page > #fp-floor {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .fp-page > #fp-light {
+        grid-column: 2;
+        grid-row: 2;
+      }
+      .fp-page > #fp-devices {
+        grid-column: 1;
+        grid-row: 3;
+      }
+      .fp-page > #fp-ac {
+        grid-column: 2;
+        grid-row: 3;
+      }
+
+      /* 窄屏布局 */
+      @media (max-height: 760px) {
+        .fp-page {
+          height: 98% !important;
+        }
+        .fp-tile-title {
+          font-size: clamp(12px, 1.8vh, 16px);
+        }
+        .fp-room .label,
+        .lamp-name,
+        .dev-name,
+        .dev-status {
+          font-size: clamp(10px, 1.5vh, 14px);
+        }
+        .lamp-list {
+          gap: 0.5%;
+        }
+        .dev-list {
+          gap: 2%;
+        }
+        .ac-btn {
+          min-height: 24px;
+          padding: 2px 4px;
+        }
+      }
+      .cockpit-nav a.active::before {
+        width: 4% !important;
+      }
+      .fp-tile {
+        border-radius: 0 !important;
+        box-shadow: 0 1px 3px rgba(27, 38, 49, 0.12) !important;
+      }
+      .fp-tile-title {
+        height: 11% !important;
+      }
+      .fp-room {
+        border-radius: 0 !important;
+      }
+      .ac-temp-circle {
+        border-color: #dfe3e6 !important;
+        background: #fafafa;
+      }
+      .ac-btn.on {
+        background: #8dcc42 !important;
+        color: #1b2631 !important;
+      }
+      .ac-btn {
+        border-color: transparent !important;
+        background: #fafafa !important;
+      }
+      .ac-pm button {
+        border-radius: 7px !important;
+        background: #fafafa !important;
+      }
+    </style>
+  </head>
+  <body class="cockpit-page">
+    <div class="cockpit-stage" id="cockpitStage">
+      <div class="cockpit-shell">
+        <aside class="cockpit-sidebar">
+          <div class="cockpit-brand">
+            <img
+              src="../assets/智域管家logo/智域家庭管家_透明PNG_300dpi.png"
+              alt="智域管家 Logo"
+            />
+          </div>
+          <nav class="cockpit-nav">
+            <a class="active" href="home.html" aria-current="page"
+              ><span class="dot">■</span
+              ><span class="label">智域驾驶仓</span></a
+            >
+            <a href="device-history.html"
+              ><span class="dot">●</span><span class="label">数据中心</span></a
+            >
+            <a href="decisions.html"
+              ><span class="dot">◆</span><span class="label">智域日志</span></a
+            >
+            <a href="health.html"
+              ><span class="dot">○</span><span class="label">系统状态</span></a
+            >
+          </nav>
+          <div class="cockpit-footer">☀ 白昼 &nbsp;|&nbsp; ☽ 黑夜</div>
+        </aside>
+
+        <section class="cockpit-content">
+          <div class="cockpit-topbar">
+            <span class="cockpit-user" id="cockpitUser">用户名</span>
+            <span class="cockpit-status">运行中</span>
+            <span class="cockpit-clock" id="cockpitClock">14:30</span>
+          </div>
+
+          <div class="fp-page">
+            <a class="fp-back" href="home.html">返回</a>
+
+            <!-- 户型图 -->
+            <div id="fp-floor" class="fp-tile" style="width: 50%; height: 42%">
+              <div class="fp-tile-title">户型图</div>
+              <div class="fp-tile-body">
+                <div class="fp-rooms">
+                  <!-- 厨房 -->
+                  <div
+                    class="fp-room"
+                    style="left: 0; top: 0; width: 48%; height: 46%"
+                  >
+                    <div class="label">厨房</div>
+                    <div
+                      class="item"
+                      style="
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        height: 18%;
+                        background: #d68910;
+                      "
+                    ></div>
+                    <div
+                      class="item"
+                      style="
+                        left: 38%;
+                        top: 36%;
+                        width: 24%;
+                        height: 42%;
+                        background: #d5dbdb;
+                      "
+                    ></div>
+                  </div>
+                  <!-- 客厅 -->
+                  <div
+                    class="fp-room"
+                    style="left: 52%; top: 0; width: 48%; height: 46%"
+                  >
+                    <div class="label">客厅</div>
+                    <div
+                      class="item"
+                      style="
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        height: 18%;
+                        background: #eaf8f4;
+                        border-top: 2px solid #48c9b0;
+                        border-radius: 0 0 6px 6px;
+                      "
+                    ></div>
+                  </div>
+                  <!-- 厕所 -->
+                  <div
+                    class="fp-room"
+                    style="left: 0; top: 50%; width: 48%; height: 50%"
+                  >
+                    <div class="label">厕所</div>
+                    <div
+                      class="item"
+                      style="
+                        left: 60%;
+                        top: 14%;
+                        width: 30%;
+                        height: 18%;
+                        background: #85c1e9;
+                        border-radius: 2px;
+                      "
+                    ></div>
+                    <div
+                      class="item"
+                      style="
+                        left: 14%;
+                        top: 64%;
+                        width: 30%;
+                        height: 24%;
+                        background: #f2f4f4;
+                        border-radius: 4px;
+                      "
+                    ></div>
+                  </div>
+                  <!-- 卧室 -->
+                  <div
+                    class="fp-room"
+                    style="left: 52%; top: 50%; width: 48%; height: 50%"
+                  >
+                    <div class="label">卧室</div>
+                    <div
+                      class="item"
+                      style="
+                        left: 10%;
+                        top: 34%;
+                        width: 60%;
+                        height: 42%;
+                        background: #d5b6e8;
+                      "
+                    ></div>
+                    <div
+                      class="item"
+                      style="
+                        left: 72%;
+                        top: 48%;
+                        width: 18%;
+                        height: 38%;
+                        background: #6e2c00;
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 灯光控制 -->
+            <div
+              id="fp-light"
+              class="fp-tile"
+              aria-label="灯光控制"
+              style="width: 48%; height: 42%"
+            >
+              <div class="fp-tile-title">灯光控制</div>
+              <div class="lamp-list">
+                <div class="lamp-row">
+                  <div class="lamp-bulb on"></div>
+                  <div class="lamp-name">主灯</div>
+                  <input
+                    class="lamp-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="72"
+                    aria-label="主灯亮度"
+                  />
+                  <div class="lamp-pct">0%</div>
+                  <button
+                    type="button"
+                    class="lamp-toggle on"
+                    data-on="true"
+                    aria-label="切换主灯"
+                  ></button>
+                </div>
+                <div class="lamp-row">
+                  <div class="lamp-bulb on"></div>
+                  <div class="lamp-name">筒灯</div>
+                  <input
+                    class="lamp-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="58"
+                    aria-label="筒灯亮度"
+                  />
+                  <div class="lamp-pct">0%</div>
+                  <button
+                    type="button"
+                    class="lamp-toggle on"
+                    data-on="true"
+                    aria-label="切换筒灯"
+                  ></button>
+                </div>
+                <div class="lamp-row">
+                  <div class="lamp-bulb on"></div>
+                  <div class="lamp-name">射灯</div>
+                  <input
+                    class="lamp-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="46"
+                    aria-label="射灯亮度"
+                  />
+                  <div class="lamp-pct">0%</div>
+                  <button
+                    type="button"
+                    class="lamp-toggle on"
+                    data-on="true"
+                    aria-label="切换射灯"
+                  ></button>
+                </div>
+                <div class="lamp-row">
+                  <div class="lamp-bulb"></div>
+                  <div class="lamp-name">氛围灯带</div>
+                  <input
+                    class="lamp-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="100"
+                    aria-label="氛围灯带亮度"
+                  />
+                  <div class="lamp-pct">100%</div>
+                  <button
+                    type="button"
+                    class="lamp-toggle off"
+                    data-on="false"
+                    aria-label="切换氛围灯带"
+                  ></button>
+                </div>
+                <div class="lamp-row">
+                  <div class="lamp-bulb"></div>
+                  <div class="lamp-name">窗帘</div>
+                  <input
+                    class="lamp-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="100"
+                    aria-label="窗帘亮度"
+                  />
+                  <div class="lamp-pct">100%</div>
+                  <button
+                    type="button"
+                    class="lamp-toggle off"
+                    data-on="false"
+                    aria-label="切换窗帘"
+                  ></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 空调控制 -->
+            <div
+              id="fp-ac"
+              class="fp-tile"
+              aria-label="空调控制"
+              style="width: 48%; height: 46%"
+            >
+              <div class="fp-tile-title">空调</div>
+              <div class="ac-body">
+                <div class="ac-temp-block">
+                  <div class="ac-temp-circle">
+                    <div class="ac-temp-l1">温度显示</div>
+                    <div class="ac-temp-l2">
+                      <span class="ac-temp-big">24</span
+                      ><span class="ac-temp-c">°C</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="ac-pm">
+                  <button
+                    type="button"
+                    data-action="decrease"
+                    aria-label="降低空调温度"
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    data-action="increase"
+                    aria-label="升高空调温度"
+                  >
+                    +
+                  </button>
+                </div>
+                <div class="ac-btns">
+                  <button type="button" class="ac-btn" data-mode="cool">
+                    制冷
+                  </button>
+                  <button type="button" class="ac-btn" data-mode="fan-speed">
+                    风速
+                  </button>
+                  <button
+                    type="button"
+                    class="ac-btn"
+                    data-mode="swing-vertical"
+                  >
+                    上下扫风
+                  </button>
+                  <button type="button" class="ac-btn" data-mode="heat">
+                    制热
+                  </button>
+                  <button type="button" class="ac-btn" data-mode="fan">
+                    送风
+                  </button>
+                  <button
+                    type="button"
+                    class="ac-btn"
+                    data-mode="swing-horizontal"
+                  >
+                    左右扫风
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 设备状态 -->
+            <div
+              id="fp-devices"
+              class="fp-tile"
+              style="width: 50%; height: 46%"
+            >
+              <div class="fp-tile-title">设备状态</div>
+              <div class="dev-list">
+                <div class="dev-row">
+                  <div class="dev-cell">
+                    <div class="dev-circle"></div>
+                    <div class="dev-name">监控</div>
+                  </div>
+                  <div class="dev-bars">
+                    <div class="dev-bar g"></div>
+                    <div class="dev-bar g"></div>
+                    <div class="dev-bar b"></div>
+                    <div class="dev-bar b"></div>
+                  </div>
+                  <div class="dev-status">
+                    <span class="live">正在运行</span>
+                  </div>
+                </div>
+                <div class="dev-row">
+                  <div class="dev-cell">
+                    <div class="dev-circle"></div>
+                    <div class="dev-name">音响</div>
+                  </div>
+                  <div class="dev-bars">
+                    <div class="dev-bar g"></div>
+                    <div class="dev-bar g"></div>
+                    <div class="dev-bar g"></div>
+                    <div class="dev-bar b"></div>
+                  </div>
+                  <div class="dev-status">
+                    <span class="live">正在运行</span>
+                  </div>
+                </div>
+                <div class="dev-row">
+                  <div class="dev-cell">
+                    <div class="dev-circle"></div>
+                    <div class="dev-name">投影</div>
+                  </div>
+                  <div class="dev-bars">
+                    <div class="dev-bar"></div>
+                    <div class="dev-bar"></div>
+                    <div class="dev-bar"></div>
+                    <div class="dev-bar"></div>
+                  </div>
+                  <div class="dev-status"><span class="idle">未运行</span></div>
+                </div>
+                <div class="dev-row">
+                  <div class="dev-cell">
+                    <div class="dev-circle"></div>
+                    <div class="dev-name">扫地机器人</div>
+                  </div>
+                  <div class="dev-bars">
+                    <div class="dev-bar"></div>
+                    <div class="dev-bar o"></div>
+                    <div class="dev-bar"></div>
+                    <div class="dev-bar"></div>
+                  </div>
+                  <div class="dev-status">
+                    <span class="charging">充电中</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      ;(function () {
+        const stage = document.getElementById('cockpitStage')
+        function fit() {
+          const vw = window.innerWidth,
+            vh = window.innerHeight
+          if (!vw || !vh) {
+            window.requestAnimationFrame(fit)
+            return
+          }
+          const targetRatio = 7.5 / 13.333
+          const viewRatio = vh / vw
+          let finalW, finalH
+          if (viewRatio > targetRatio) {
+            finalH = vh
+            finalW = vh / targetRatio
+          } else {
+            finalW = vw
+            finalH = vw * targetRatio
+          }
+          const baseFont = vw / 100
+          stage.style.left = '50%'
+          stage.style.top = '50%'
+          stage.style.width = finalW + 'px'
+          stage.style.height = finalH + 'px'
+          stage.style.transform = 'translate(-50%, -50%)'
+          stage.style.fontSize = baseFont + 'px'
+
+          const sels = {
+            '.cockpit-footer': 0.85,
+            '.cockpit-user': 1.1,
+            '.cockpit-status': 0.9,
+            '.cockpit-clock': 1.05,
+            '.fp-back': 1.1,
+            '.fp-tile-title': 1.05,
+            '.fp-room .label': 1.4,
+            '.lamp-name': 0.95,
+            '.lamp-pct': 0.95,
+            '.dev-name': 1.05,
+            '.dev-status': 1.0,
+            '.ac-temp-l1': 1.05,
+            '.ac-temp-big': 1.6,
+            '.ac-temp-c': 1.1,
+            '.ac-btn': 1.0,
+            '.ac-pm button': 1.4,
+          }
+          Object.entries(sels).forEach(([sel, mult]) => {
+            stage.querySelectorAll(sel).forEach((el) => {
+              el.style.fontSize = baseFont * mult + 'px'
+            })
+          })
+        }
+        fit()
+        window.addEventListener('resize', fit)
+      })()
+
+      ;(function () {
+        let name = '用户'
+        try {
+          const u = JSON.parse(
+            localStorage.getItem('zhiyuCurrentUser') || 'null',
+          )
+          if (u && u.account) name = u.account
+        } catch (e) {}
+        const el = document.getElementById('cockpitUser')
+        if (el) el.textContent = name
+      })()
+      setInterval(() => {
+        const c = document.getElementById('cockpitClock')
+        if (c)
+          c.textContent = new Date().toLocaleTimeString('zh-CN', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+      }, 1000)
+
+      /* 虚拟传感器数据 */
+      const DEVICE_STATE_KEY = 'zhiyuDeviceStates'
+      const defaultDeviceStates = {
+        light: true,
+        airConditioner: true,
+        projector: false,
+        monitor: true,
+      }
+      function readDeviceStates() {
+        try {
+          return Object.assign(
+            {},
+            defaultDeviceStates,
+            JSON.parse(localStorage.getItem(DEVICE_STATE_KEY) || '{}'),
+          )
+        } catch (e) {
+          return Object.assign({}, defaultDeviceStates)
+        }
+      }
+      function writeDeviceStates(states) {
+        localStorage.setItem(DEVICE_STATE_KEY, JSON.stringify(states))
+      }
+      function syncSharedDeviceStates() {
+        const states = readDeviceStates()
+        virtualSensorData.lights[0].on = Boolean(states.light)
+
+        const sharedDevices = [
+          { index: 0, key: 'monitor', activeBars: ['g', 'g', 'b', 'b'] },
+          { index: 2, key: 'projector', activeBars: ['g', 'g', 'b', 'b'] },
+        ]
+
+        sharedDevices.forEach((device) => {
+          const isRunning = Boolean(states[device.key])
+          virtualSensorData.devices[device.index] = {
+            status: isRunning ? '正在运行' : '未运行',
+            tone: isRunning ? 'live' : 'idle',
+            bars: isRunning ? device.activeBars : ['', '', '', ''],
+          }
+        })
+      }
+
+      const virtualSensorData = {
+        lights: [
+          { brightness: 72, on: true },
+          { brightness: 58, on: true },
+          { brightness: 46, on: true },
+          { brightness: 100, on: false },
+          { brightness: 100, on: false },
+        ],
+        devices: [
+          { status: '正在运行', tone: 'live', bars: ['g', 'g', 'b', 'b'] },
+          { status: '正在运行', tone: 'live', bars: ['g', 'g', 'g', 'b'] },
+          { status: '未运行', tone: 'idle', bars: ['', '', '', ''] },
+          { status: '充电中', tone: 'charging', bars: ['', 'o', '', ''] },
+        ],
+        airConditioner: {
+          temperature: 24,
+          minTemperature: 16,
+          maxTemperature: 30,
+          modes: new Set(['cool']),
+        },
+      }
+
+      function renderVirtualSensorData() {
+        syncSharedDeviceStates()
+
+        document.querySelectorAll('.lamp-row').forEach((row, index) => {
+          const data = virtualSensorData.lights[index]
+          if (!data) return
+          const bulb = row.querySelector('.lamp-bulb')
+          const slider = row.querySelector('.lamp-slider')
+          const pct = row.querySelector('.lamp-pct')
+          const toggle = row.querySelector('.lamp-toggle')
+          bulb.classList.toggle('on', data.on)
+          if (slider) {
+            slider.value = String(data.brightness)
+            slider.style.setProperty('--brightness', data.brightness + '%')
+          }
+          pct.textContent = data.brightness + '%'
+          toggle.classList.toggle('on', data.on)
+          toggle.classList.toggle('off', !data.on)
+          toggle.dataset.on = String(data.on)
+        })
+
+        document.querySelectorAll('.dev-row').forEach((row, index) => {
+          const data = virtualSensorData.devices[index]
+          if (!data) return
+          row.querySelectorAll('.dev-bar').forEach((bar, barIndex) => {
+            bar.className =
+              'dev-bar' + (data.bars[barIndex] ? ' ' + data.bars[barIndex] : '')
+          })
+          const status = row.querySelector('.dev-status')
+          status.innerHTML =
+            '<span class="' + data.tone + '">' + data.status + '</span>'
+        })
+
+        document.querySelector('.ac-temp-big').textContent =
+          virtualSensorData.airConditioner.temperature
+        document.querySelectorAll('.ac-btn[data-mode]').forEach((button) => {
+          button.classList.toggle(
+            'on',
+            virtualSensorData.airConditioner.modes.has(button.dataset.mode),
+          )
+        })
+      }
+
+      document.querySelectorAll('.lamp-toggle').forEach((toggle, index) => {
+        toggle.addEventListener('click', () => {
+          const data = virtualSensorData.lights[index]
+          data.on = !data.on
+          if (index === 0) {
+            const states = readDeviceStates()
+            states.light = data.on
+            writeDeviceStates(states)
+          }
+          renderVirtualSensorData()
+        })
+      })
+
+      document.querySelectorAll('.lamp-slider').forEach((slider, index) => {
+        slider.addEventListener('input', () => {
+          const data = virtualSensorData.lights[index]
+          if (!data) return
+          data.brightness = Number(slider.value)
+          data.on = data.brightness > 0
+          if (index === 0) {
+            const states = readDeviceStates()
+            states.light = data.on
+            writeDeviceStates(states)
+          }
+          renderVirtualSensorData()
+        })
+      })
+
+      document.querySelectorAll('.ac-pm button').forEach((button) => {
+        button.addEventListener('click', () => {
+          const ac = virtualSensorData.airConditioner
+          const step = button.dataset.action === 'increase' ? 1 : -1
+          ac.temperature = Math.min(
+            ac.maxTemperature,
+            Math.max(ac.minTemperature, ac.temperature + step),
+          )
+          button.classList.add('pressed')
+          window.setTimeout(() => button.classList.remove('pressed'), 140)
+          renderVirtualSensorData()
+        })
+      })
+
+      document.querySelectorAll('.ac-btn[data-mode]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const mode = button.dataset.mode
+          const modes = virtualSensorData.airConditioner.modes
+          if (mode === 'cool' || mode === 'heat' || mode === 'fan') {
+            ;['cool', 'heat', 'fan'].forEach((item) => modes.delete(item))
+            modes.add(mode)
+          } else if (modes.has(mode)) {
+            modes.delete(mode)
+          } else {
+            modes.add(mode)
+          }
+          renderVirtualSensorData()
+        })
+      })
+
+      renderVirtualSensorData()
+      window.addEventListener('storage', (event) => {
+        if (event.key === DEVICE_STATE_KEY) renderVirtualSensorData()
+      })
+      window.addEventListener('pageshow', renderVirtualSensorData)
+
+      /* 禁止浏览器缩放 */
+      document.addEventListener(
+        'wheel',
+        function (e) {
+          if (e.ctrlKey) e.preventDefault()
+        },
+        { passive: false },
+      )
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && /^[0+-=]$/.test(e.key)) e.preventDefault()
+      })
+      document.addEventListener(
+        'touchmove',
+        function (e) {
+          if (e.touches.length === 2) e.preventDefault()
+        },
+        { passive: false },
+      )
+    </script>
+  </body>
+</html>

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1220" />
+    <title>注册 · 智域管家</title>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="login-page register-page">
+    <main class="login-shell">
+      <section class="brand-panel" aria-label="产品介绍">
+        <div class="brand-topline">
+          <span class="status-dot"></span> SMART HOME OS
+          <span class="topline-separator">/</span> 智能家庭操作系统
+        </div>
+        <div class="brand-content">
+          <div class="brand-lockup">
+            <div class="brand-mark">
+              <img
+                src="../assets/智域管家logo/智域家庭管家_透明PNG_300dpi.png"
+                alt="智域管家 Logo"
+              />
+            </div>
+            <div>
+              <strong>智域管家</strong><span>INTELLIGENT HOME MANAGER</span>
+            </div>
+          </div>
+          <h1>从今天起，<br /><em>让家更懂你。</em></h1>
+          <p class="brand-description">
+            创建你的智域管家账户，开启全屋智能感知与自动决策。
+          </p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <span class="feature-icon">01</span>
+              <div>
+                <strong>创建专属账户</strong
+                ><small>记录你的家庭偏好与智能场景</small>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">02</span>
+              <div>
+                <strong>连接智能设备</strong
+                ><small>统一管理灯光、空调与传感器</small>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">03</span>
+              <div>
+                <strong>享受自动生活</strong
+                ><small>让 AI 代替你做出每一个舒适决策</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="brand-footer">
+          <span>智域管家 v1.0</span><span>安全注册通道</span>
+        </div>
+      </section>
+
+      <section class="form-panel" aria-label="注册账号">
+        <div class="form-card register-card">
+          <div class="form-heading">
+            <span class="eyebrow">CREATE ACCOUNT</span>
+            <h2>创建账号</h2>
+            <p>只需几步，开启你的智能家庭生活。</p>
+          </div>
+          <div class="step-indicator" aria-label="注册进度">
+            <span class="step active">1</span><i></i><span class="step">2</span
+            ><i></i><span class="step">3</span
+            ><small
+              >账户信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;安全设置&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;完成注册</small
+            >
+          </div>
+          <form id="registerForm" novalidate>
+            <label class="field-label" for="registerAccount">用户名</label>
+            <div class="field-wrap">
+              <span class="field-icon">◎</span
+              ><input
+                id="registerAccount"
+                name="account"
+                type="text"
+                autocomplete="username"
+                placeholder="请输入用户名"
+              />
+            </div>
+            <label class="field-label" for="registerPhone">手机号码</label>
+            <div class="field-wrap">
+              <span class="field-icon">♧</span
+              ><input
+                id="registerPhone"
+                name="phone"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel"
+                placeholder="请输入11位手机号码"
+              />
+            </div>
+            <label class="field-label" for="registerPassword">设置密码</label>
+            <div class="field-wrap">
+              <span class="field-icon">◇</span
+              ><input
+                id="registerPassword"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="8-20位，含字母与数字"
+              /><button
+                class="toggle-password"
+                id="toggleRegisterPassword"
+                type="button"
+                aria-label="显示密码"
+              >
+                显示
+              </button>
+            </div>
+            <div class="password-rule">
+              <span class="rule-dot"></span>密码需包含大小写字母与数字，长度为
+              8-20 位
+            </div>
+            <label class="agreement"
+              ><input id="registerAgreement" type="checkbox" checked /><span
+                class="custom-check"
+              ></span
+              ><span
+                >我已阅读并同意 <a href="#">服务协议</a>、<a href="#"
+                  >隐私政策</a
+                >与<a href="#">智域账号服务须知</a></span
+              ></label
+            >
+            <button class="login-button" type="submit">
+              创建账号 <span>→</span>
+            </button>
+            <div
+              class="form-message"
+              id="registerMessage"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </form>
+          <div class="form-divider"><span>已经有账号？</span></div>
+          <a class="register-link" href="index.html">返回登录 <span>↗</span></a>
+        </div>
+        <div class="form-bottom">
+          <span>© 2026 智域管家</span><span>隐私与安全</span>
+        </div>
+      </section>
+    </main>
+    <script>
+      const registerForm = document.getElementById('registerForm')
+      const registerMessage = document.getElementById('registerMessage')
+      const registerAgreement = document.getElementById('registerAgreement')
+      const registerPassword = document.getElementById('registerPassword')
+      const toggleRegisterPassword = document.getElementById(
+        'toggleRegisterPassword',
+      )
+      toggleRegisterPassword.addEventListener('click', () => {
+        const visible = registerPassword.type === 'text'
+        registerPassword.type = visible ? 'password' : 'text'
+        toggleRegisterPassword.textContent = visible ? '显示' : '隐藏'
+        toggleRegisterPassword.setAttribute(
+          'aria-label',
+          visible ? '显示密码' : '隐藏密码',
+        )
+      })
+      registerForm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        const account = document.getElementById('registerAccount').value.trim()
+        const phone = document.getElementById('registerPhone').value.trim()
+        const pwd = registerPassword.value.trim()
+        const passwordValid =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/.test(pwd)
+        if (!account || !phone || !pwd) {
+          registerMessage.textContent = '请完整填写注册信息。'
+          registerMessage.className = 'form-message error'
+          return
+        }
+        if (!/^1\d{10}$/.test(phone)) {
+          registerMessage.textContent = '请输入正确的11位手机号码。'
+          registerMessage.className = 'form-message error'
+          return
+        }
+        if (!passwordValid) {
+          registerMessage.textContent = '密码格式不符合安全要求。'
+          registerMessage.className = 'form-message error'
+          return
+        }
+        if (!registerAgreement.checked) {
+          registerMessage.textContent = '请先阅读并同意相关协议。'
+          registerMessage.className = 'form-message error'
+          return
+        }
+        registerMessage.textContent = '注册信息校验通过，正在创建账号…'
+        registerMessage.className = 'form-message success'
+        const accounts = JSON.parse(
+          localStorage.getItem('zhiyuAccounts') || '[]',
+        )
+        const existingIndex = accounts.findIndex(
+          (item) => item.account === account,
+        )
+        const record = {
+          account,
+          password: pwd,
+          phone,
+          createdAt: new Date().toISOString(),
+        }
+        if (existingIndex >= 0) {
+          registerMessage.textContent = '该用户名已存在，请更换用户名。'
+          registerMessage.className = 'form-message error'
+          return
+        }
+        accounts.push(record)
+        localStorage.setItem('zhiyuAccounts', JSON.stringify(accounts))
+        localStorage.setItem(
+          'zhiyuCurrentUser',
+          JSON.stringify({ account, loginAt: new Date().toISOString() }),
+        )
+        setTimeout(() => {
+          window.location.href = 'home.html'
+        }, 450)
+      })
+    </script>
+  </body>
+</html>

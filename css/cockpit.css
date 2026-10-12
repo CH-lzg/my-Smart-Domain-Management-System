@@ -1,0 +1,420 @@
+/* 页面基础 */
+* { box-sizing: border-box; }
+
+.cockpit-page {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  font-family: "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+}
+
+.cockpit-stage {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  background: #ffffff;
+  transform-origin: center center;
+  overflow: hidden;
+}
+
+.cockpit-shell {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+}
+
+/* 侧栏 */
+.cockpit-sidebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 13%;
+  height: 100%;
+  background: #1B2631;
+  overflow: hidden;
+}
+
+/* 品牌 */
+.cockpit-brand {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 22%;
+  padding: 2%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.cockpit-brand img {
+  height: 100% !important;
+  width: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+
+  filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(150deg);
+}
+
+/* 导航 */
+.cockpit-nav {
+  position: absolute;
+  left: 0;
+  top: 24%;
+  width: 100%;
+  height: 60%;
+}
+.cockpit-nav a {
+  position: absolute !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 14% !important;
+  display: block;
+  color: #B0BEC5;
+  text-decoration: none;
+  background: transparent;
+}
+.cockpit-nav a .dot {
+  position: absolute !important;
+  left: 16% !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 10% !important;
+  text-align: center !important;
+  color: #7F8C8D;
+  line-height: 1 !important;
+  font-size: 1em !important;
+}
+.cockpit-nav a .label {
+  position: absolute !important;
+  left: 28% !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  white-space: nowrap !important;
+  font-size: 1em !important;
+  line-height: 1 !important;
+}
+.cockpit-nav a.active {
+  background: #2E86C1;
+  color: #ffffff;
+}
+.cockpit-nav a.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6%;
+  height: 100%;
+  background: #48C9B0;
+}
+.cockpit-nav a.active .dot { color: #ffffff; }
+.cockpit-nav a:hover {
+  background: rgba(46, 134, 193, 0.35);
+  color: #ffffff;
+}
+/* 菜单位置 */
+.cockpit-nav a:nth-child(1) { top: 6% !important; }
+.cockpit-nav a:nth-child(2) { top: 28% !important; }
+.cockpit-nav a:nth-child(3) { top: 50% !important; }
+.cockpit-nav a:nth-child(4) { top: 72% !important; }
+
+.cockpit-footer {
+  position: absolute;
+  left: 8%;
+  bottom: 3%;
+  color: #48C9B0;
+  letter-spacing: 1.2px;
+  white-space: nowrap;
+}
+
+/* 主内容 */
+.cockpit-content {
+  position: absolute;
+  left: 13%;
+  top: 0;
+  width: 87%;
+  height: 100%;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* 状态栏 */
+.cockpit-topbar {
+  position: absolute;
+  right: 3%;
+  top: 5%;
+  display: flex;
+  align-items: center;
+  gap: 5%;
+  white-space: nowrap;
+}
+.cockpit-user {
+  color: #48C9B0;
+  font-weight: bold;
+}
+.cockpit-status {
+  color: #ffffff;
+  background: #48C9B0;
+  font-weight: bold;
+  padding: 4px 14px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.cockpit-status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #92D050;
+  flex-shrink: 0;
+}
+.cockpit-clock {
+  color: #7F8C8D;
+}
+
+/* 指标 */
+.cockpit-metrics {
+  position: absolute;
+  left: 2.5%;
+  top: 14%;
+  width: 95%;
+  height: 16%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2%;
+}
+.metric-card {
+  background: #ffffff;
+  border: 1px solid #EAEEF1;
+  border-radius: 6px;
+  padding: 6% 5%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(27, 38, 49, 0.04);
+}
+.metric-head {
+  display: flex;
+  align-items: center;
+  gap: 8%;
+}
+.metric-icon {
+  line-height: 1;
+}
+.metric-icon.temp   { color: #2E86C1; }
+.metric-icon.humid  { color: #48C9B0; }
+.metric-icon.light  { color: #E67E22; }
+.metric-icon.person { color: #48C9B0; }
+.metric-name {
+  color: #7F8C8D;
+}
+.metric-value {
+  color: #1B2631;
+  font-weight: bold;
+  line-height: 1;
+  font-family: "Microsoft YaHei", serif;
+  text-align: left;
+  padding-left: 4%;
+}
+.metric-value small {
+  color: #95A5A6;
+  font-weight: normal;
+}
+
+/* 面板 */
+.cockpit-panel {
+  position: absolute;
+  background: #ffffff;
+  border: 1px solid #EAEEF1;
+  border-radius: 6px;
+  padding: 2% 2.5%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(27, 38, 49, 0.04);
+}
+.panel-title {
+  color: #1A5276;
+  font-weight: bold;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+}
+.panel-title.agent { color: #48C9B0; }
+
+/* 设备状态 */
+.panel-devices {
+  left: 2.5%;
+  top: 33%;
+  width: 47%;
+  height: 38%;
+  padding-top: 3%;
+}
+.panel-devices .panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4%;
+}
+.panel-devices .arrow {
+  color: #1A5276;
+  font-weight: bold;
+  font-size: 1.4em;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 运行模式 */
+.panel-ai {
+  left: 50.7%;
+  top: 33%;
+  width: 47%;
+  height: 38%;
+}
+.ai-modes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5%;
+  margin-top: 4%;
+}
+.ai-mode {
+  width: 100%;
+  flex: 1;
+  max-height: 28%;
+  min-height: 38px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-weight: bold;
+  border: 0;
+  cursor: pointer;
+  background: #1A5276;
+  letter-spacing: 1px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.ai-mode:hover { background: #2874a6; }
+.ai-mode.active { background: #48C9B0; }
+.ai-mode.active:hover { background: #3ab09a; }
+
+/* 设备网格 */
+.device-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-content: center;
+  gap: 10% 5%;
+  margin-top: 4%;
+  padding: 2% 0;
+}
+.device-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6%;
+  min-height: 48px;
+}
+.device-state {
+  color: #27AE60;
+  font-size: 0.9em;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.device-state.off {
+  color: #95A5A6;
+}
+.device-name {
+  background: #1A5276;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 12% 0;
+  border-radius: 4px;
+  flex: 1;
+  text-align: center;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.device-switch {
+  width: 48px;
+  height: 22px;
+  border-radius: 11px;
+  background: #F0F4F8;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.device-switch i {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #7F8C8D;
+  top: 2px;
+  left: 3px;
+  transition: all 0.2s;
+}
+.device-switch.on { background: #48C9B0; }
+.device-switch.on i { background: #ffffff; left: auto; right: 3px; }
+
+/* 人工操作 */
+.panel-intervene {
+  left: 2.5%;
+  top: 73.5%;
+  width: 64%;
+  height: 22%;
+}
+.intervention-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3%;
+  align-content: center;
+  margin-top: 3%;
+}
+.intervention-btn {
+  background: #1A5276;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 6% 2%;
+  border-radius: 4px;
+  border: 0;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+  min-height: 40px;
+}
+.intervention-btn:hover { background: #2E86C1; }
+.intervention-btn:active { transform: scale(0.98); }
+.intervention-btn.flash { background: #48C9B0; }
+
+/* 最近决策 */
+.panel-agent {
+  left: 68%;
+  top: 73.5%;
+  width: 30%;
+  height: 22%;
+}
+.agent-decision {
+  flex: 1;
+  background: #F0F4F8;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7F8C8D;
+  margin-top: 4%;
+}

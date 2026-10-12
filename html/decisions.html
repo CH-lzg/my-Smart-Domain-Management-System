@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>智域日志 · 智域管家</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/cockpit.css" />
+    <link rel="stylesheet" href="../css/modules.css" />
+    <style>
+      body.cockpit-page {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        touch-action: none;
+      }
+      .decisions-page .page-title {
+        display: none;
+      }
+      .decisions-page .page-padding {
+        top: 4%;
+        height: 92%;
+      }
+    </style>
+  </head>
+  <body class="cockpit-page decisions-page">
+    <div class="cockpit-stage" id="cockpitStage">
+      <div class="cockpit-shell">
+        <aside class="cockpit-sidebar">
+          <div class="cockpit-brand">
+            <img
+              src="../assets/智域管家logo/智域家庭管家_透明PNG_300dpi.png"
+              alt="智域管家 Logo"
+            />
+          </div>
+          <nav class="cockpit-nav">
+            <a href="home.html"
+              ><span class="dot">■</span
+              ><span class="label">智域驾驶仓</span></a
+            >
+            <a href="device-history.html"
+              ><span class="dot">●</span><span class="label">数据中心</span></a
+            >
+            <a class="active" href="decisions.html" aria-current="page"
+              ><span class="dot">◆</span><span class="label">智域日志</span></a
+            >
+            <a href="health.html"
+              ><span class="dot">○</span><span class="label">系统状态</span></a
+            >
+          </nav>
+          <div class="cockpit-footer">☀ 白昼 &nbsp;|&nbsp; ☽ 黑夜</div>
+        </aside>
+
+        <section class="cockpit-content">
+          <div class="cockpit-topbar">
+            <span class="cockpit-user" id="cockpitUser">用户名</span>
+            <span class="cockpit-status">运行中</span>
+            <span class="cockpit-clock" id="cockpitClock">14:30</span>
+          </div>
+
+          <div class="page-padding">
+            <div class="page-title">
+              <span class="accent"></span>智域管家 · 今日 AI 决策
+            </div>
+
+            <div class="d-top-tabs" role="tablist" aria-label="决策模式">
+              <button
+                class="d-tab active"
+                type="button"
+                data-mode="all"
+                aria-selected="true"
+              >
+                全部模式
+              </button>
+              <button
+                class="d-tab"
+                type="button"
+                data-mode="focus"
+                aria-selected="false"
+              >
+                专注模式
+              </button>
+              <button
+                class="d-tab"
+                type="button"
+                data-mode="night"
+                aria-selected="false"
+              >
+                夜间休憩模式
+              </button>
+              <button
+                class="d-tab"
+                type="button"
+                data-mode="away"
+                aria-selected="false"
+              >
+                离家节能模式
+              </button>
+            </div>
+
+            <div class="d-timeline-wrap" aria-live="polite">
+              <div class="d-tl-row" data-mode="night">
+                <span class="d-tl-time">21:53</span
+                ><span class="d-tl-line"></span
+                ><span class="d-tl-tag">夜间休憩</span
+                ><span class="d-tl-msg"
+                  >检测人员在场未活动30分钟，自动关闭灯光</span
+                >
+              </div>
+              <div class="d-tl-row" data-mode="night">
+                <span class="d-tl-time">21:30</span
+                ><span class="d-tl-line"></span
+                ><span class="d-tl-tag">夜间休憩</span
+                ><span class="d-tl-msg"
+                  >检测人员在场未活动30分钟，自动关闭灯光</span
+                >
+              </div>
+              <div class="d-tl-row" data-mode="focus">
+                <span class="d-tl-time">20:15</span
+                ><span class="d-tl-line"></span
+                ><span class="d-tl-tag">专注模式</span
+                ><span class="d-tl-msg">检测到人员进入书房，调亮台灯至80%</span>
+              </div>
+              <div class="d-tl-row" data-mode="day">
+                <span class="d-tl-time">18:00</span
+                ><span class="d-tl-line"></span
+                ><span class="d-tl-tag">白天模式</span
+                ><span class="d-tl-msg">自然光照不足，开启客厅灯光</span>
+              </div>
+              <div class="d-tl-row" data-mode="focus">
+                <span class="d-tl-time">14:30</span
+                ><span class="d-tl-line"></span
+                ><span class="d-tl-tag">专注模式</span
+                ><span class="d-tl-msg">室温偏高，自动开启空调制冷模式</span>
+              </div>
+              <div class="d-tl-row" data-mode="away">
+                <span class="d-tl-time">10:00</span
+                ><span class="d-tl-line"></span
+                ><span class="d-tl-tag">白天模式</span
+                ><span class="d-tl-msg"
+                  >检测到人员离家，自动切换至离家节能模式</span
+                >
+              </div>
+            </div>
+
+            <!-- 右侧统计和推理详情 -->
+            <div class="d-right-wrap">
+              <!-- 总次数 -->
+              <div class="d-bigstat">
+                <span class="d-bigstat-num" id="decisionTotal">40</span>
+                <span class="d-bigstat-unit">次</span>
+              </div>
+
+              <!-- 统计数据 -->
+              <div class="d-stats-row">
+                <div class="d-stat-cell">
+                  <div class="d-stat-num" id="decisionCount">
+                    50<small>次</small>
+                  </div>
+                  <div class="d-stat-label">决策</div>
+                </div>
+                <div class="d-stat-cell">
+                  <div class="d-stat-num" id="autoCount">
+                    40<small>次</small>
+                  </div>
+                  <div class="d-stat-label">自动控制</div>
+                </div>
+                <div class="d-stat-cell">
+                  <div class="d-stat-num" id="manualCount">
+                    10<small>次</small>
+                  </div>
+                  <div class="d-stat-label">人工干预</div>
+                </div>
+              </div>
+
+              <!-- 推理详情 -->
+              <div class="d-reason-card">
+                <div class="d-reason-title">本次决策推理详情</div>
+
+                <div class="d-reason-row" style="top: 14%">
+                  <div class="d-reason-label">触发来源</div>
+                  <div class="d-reason-value" id="reasonSource">
+                    夜间休憩模式
+                  </div>
+                </div>
+                <div class="d-reason-row" style="top: 24%">
+                  <div class="d-reason-label">感知输入</div>
+                  <div class="d-reason-value">人员存在 | 光照- | 温度-</div>
+                </div>
+                <div class="d-reason-row" style="top: 36%">
+                  <div class="d-reason-label">推理逻辑</div>
+                  <div class="d-reason-value" id="reasonLogic">
+                    检测人员未活动30分钟，自动关闭灯光
+                  </div>
+                </div>
+                <div class="d-reason-row" style="top: 52%">
+                  <div class="d-reason-label">环境评估</div>
+                  <div class="d-reason-value">温度舒适：继续保持室内温度</div>
+                </div>
+                <div class="d-reason-row" style="top: 68%">
+                  <div class="d-reason-label">执行动作</div>
+                  <div class="d-reason-value">关闭所有灯光</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      ;(function () {
+        const stage = document.getElementById('cockpitStage')
+        function fit() {
+          const vw = window.innerWidth,
+            vh = window.innerHeight
+          const tr = 7.5 / 13.333
+          const vr = vh / vw
+          let fw, fh
+          if (vr > tr) {
+            fh = vh
+            fw = vh / tr
+          } else {
+            fw = vw
+            fh = vw * tr
+          }
+          const bf = vw / 100
+          stage.style.left = '50%'
+          stage.style.top = '50%'
+          stage.style.width = fw + 'px'
+          stage.style.height = fh + 'px'
+          stage.style.transform = 'translate(-50%, -50%)'
+          stage.style.fontSize = bf + 'px'
+          const sels = {
+            '.page-title': 1.6,
+            '.d-tab': 1.0,
+            '.d-tl-time': 1.05,
+            '.d-tl-tag': 0.95,
+            '.d-tl-msg': 1.0,
+            '.d-bigstat-num': 4.6,
+            '.d-bigstat-unit': 1.6,
+            '.d-stat-num': 1.4,
+            '.d-stat-label': 0.95,
+            '.d-reason-title': 1.1,
+            '.d-reason-label': 0.95,
+            '.d-reason-value': 0.95,
+          }
+          Object.entries(sels).forEach(([sel, mult]) => {
+            stage.querySelectorAll(sel).forEach((el) => {
+              el.style.fontSize = bf * mult + 'px'
+            })
+          })
+        }
+        fit()
+        window.addEventListener('resize', fit)
+      })()
+
+      ;(function () {
+        const modeData = {
+          all: {
+            total: 40,
+            decisions: 50,
+            auto: 40,
+            manual: 10,
+            source: '夜间休憩模式',
+            logic: '检测人员未活动30分钟，自动关闭灯光',
+          },
+          focus: {
+            total: 12,
+            decisions: 16,
+            auto: 13,
+            manual: 3,
+            source: '专注模式',
+            logic: '检测到人员进入书房，调亮台灯至80%',
+          },
+          night: {
+            total: 18,
+            decisions: 21,
+            auto: 18,
+            manual: 3,
+            source: '夜间休憩模式',
+            logic: '检测人员在场未活动30分钟，自动关闭灯光',
+          },
+          away: {
+            total: 10,
+            decisions: 13,
+            auto: 9,
+            manual: 4,
+            source: '离家节能模式',
+            logic: '检测到人员离家，自动切换至离家节能模式',
+          },
+        }
+        const tabs = document.querySelectorAll('.d-tab')
+        const rows = document.querySelectorAll('.d-tl-row')
+        function renderMode(mode) {
+          const data = modeData[mode]
+          tabs.forEach((tab) => {
+            const active = tab.dataset.mode === mode
+            tab.classList.toggle('active', active)
+            tab.setAttribute('aria-selected', active ? 'true' : 'false')
+          })
+          rows.forEach((row) =>
+            row.classList.toggle(
+              'is-hidden',
+              mode !== 'all' && row.dataset.mode !== mode,
+            ),
+          )
+          document.getElementById('decisionTotal').textContent = data.total
+          document.getElementById('decisionCount').innerHTML =
+            data.decisions + '<small>次</small>'
+          document.getElementById('autoCount').innerHTML =
+            data.auto + '<small>次</small>'
+          document.getElementById('manualCount').innerHTML =
+            data.manual + '<small>次</small>'
+          document.getElementById('reasonSource').textContent = data.source
+          document.getElementById('reasonLogic').textContent = data.logic
+        }
+        tabs.forEach((tab) =>
+          tab.addEventListener('click', () => renderMode(tab.dataset.mode)),
+        )
+        renderMode('all')
+      })()
+
+      ;(function () {
+        let name = '用户'
+        try {
+          const u = JSON.parse(
+            localStorage.getItem('zhiyuCurrentUser') || 'null',
+          )
+          if (u && u.account) name = u.account
+        } catch (e) {}
+        const el = document.getElementById('cockpitUser')
+        if (el) el.textContent = name
+      })()
+      setInterval(() => {
+        const c = document.getElementById('cockpitClock')
+        if (c)
+          c.textContent = new Date().toLocaleTimeString('zh-CN', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+      }, 1000)
+      document.addEventListener(
+        'wheel',
+        (e) => {
+          if (e.ctrlKey) e.preventDefault()
+        },
+        { passive: false },
+      )
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && /^[0+-=]$/.test(e.key)) e.preventDefault()
+      })
+      document.addEventListener(
+        'touchmove',
+        (e) => {
+          if (e.touches.length === 2) e.preventDefault()
+        },
+        { passive: false },
+      )
+    </script>
+  </body>
+</html>
